@@ -2,14 +2,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import router from './routes';
-// import Database from './database';
+import Database from './database';
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
 
 // Set up database with mongoose
-// const instance = new Database();
+const instance = new Database();
 
 app.use(bodyParser.json());
 
