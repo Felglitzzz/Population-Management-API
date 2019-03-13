@@ -4,6 +4,9 @@
 # Population-Management-API
  Population Management API manages the list of locations and the total number of residents in each location broken down by gender.
 
+## API Documentation
+Click [here](https://documenter.getpostman.com/view/2988092/S17kyW2s) to view the detailed API documentation
+
 ## Take a Peek
 API is hosted on heroku via this [link](https://api-population-management.herokuapp.com/api/v1/home)
 
