@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start-dev": "nodemon --exec babel-node server/index",
-    "postinstall": "babel server -d dist -s",
+    "heroku-postbuild": "babel server -d dist -s",
     "start": "node dist/index.js",
     "test": "NODE_ENV=test nyc --reporter=text --reporter=lcov mocha --require @babel/register tests/index.spec.js --exit",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
