@@ -24,12 +24,15 @@ class LocationController {
             }}
           )
           .then(() => {
-            return res.status(200).send({
-              message: 'Apex Location and sublocation created successfully'
+            Location.findById(record._id).then((data) => {
+              return res.status(200).send({
+                message: 'Apex Location and sublocation created successfully',
+                data
+              })
             })
           })
           .catch(err => {
-            return res.status(201).send({
+            return res.status(500).send({
               message: 'error creating apex location and sub location',
               error: err.message
             })
@@ -37,7 +40,7 @@ class LocationController {
         })
       })
       .catch(err => {
-        return res.status(201).send({
+        return res.status(500).send({
           message: 'error creating apex location and sub location',
           error: err.message
         })
@@ -67,10 +70,13 @@ class LocationController {
         })
       }
       record.subLocations.push(subLocation)
-      record.save();
-      return res.status(201).send({
-        message: "sublocation added to apex location successfully"
-      })
+      record.save()
+        .then(record => {
+          return res.status(201).send({
+            message: "sublocation added to apex location successfully",
+            data: record
+          })
+        })
     })
     .catch(err => {
       return res.status(500).send({
@@ -96,9 +102,14 @@ class LocationController {
           totalCount: record.maleCount + record.femaleCount
         }}
       )
-      .then(() => res.status(200).send({
-        message: 'Location created successfully'
-      }))
+      .then(() => {
+        return Location.findById(record._id).then((data) => {
+          return res.status(200).send({
+            message: 'Location created successfully',
+            data
+          })
+        })
+      })
       .catch(err => res.status(500).send({
         message: 'error creating location'
       }))
@@ -131,31 +142,18 @@ class LocationController {
     const { name, maleCount, femaleCount } = req.body;
     Location.findById(id)
     .then(record => {
-      if (!name) {
-        return res.status(400).send({
-          message: 'Location Name is required'
-        })
-      }
-      if (!maleCount) {
-        return res.status(400).send({
-          message: 'Number of male resident field is required'
-        })
-      }
-      if (!femaleCount) {
-        return res.status(400).send({
-          message: 'Number of female resident field is required'
-        })
-      }
-
       record.updateOne({
         name,
         maleCount,
         femaleCount,
         totalCount: maleCount + femaleCount
       })
-      .then((data) => {
-        return res.status(200).send({
-          message: 'Location updated successfully',
+      .then(() => {
+        return Location.findById(record._id).then((data) => {
+          return res.status(200).send({
+            message: 'Location updated successfully',
+            data
+          })
         })
       })
       .catch(err => {
@@ -170,7 +168,7 @@ class LocationController {
     const { parentId, id } = req.params;
     const { subLocationName, maleCount, femaleCount} = req.body;
 
-    Location.update(
+    Location.updateOne(
       {"_id": parentId, "subLocations._id": id},
       { "$set": {
         "subLocations.$.maleCount": maleCount,
@@ -179,8 +177,11 @@ class LocationController {
         "subLocations.$.totalCount": femaleCount + maleCount,
       }}
     ).then(data => {
-      return res.status(200).send({
-        message: 'sublocation updated successfully',
+      return Location.findById(parentId).then((data) => {
+        return res.status(200).send({
+          message: 'Location updated successfully',
+          data
+        })
       })
     })
     .catch(err => {
@@ -215,7 +216,7 @@ class LocationController {
       record.updateOne({name})
         .then(() => {
           return res.status(200).send({
-            message: 'parent location name updated successfully',
+            message: 'apex location name updated successfully',
           })
         })
         .catch(err => {
@@ -235,23 +236,20 @@ class LocationController {
             message: 'location not found'
           })
         }
-        console.log('removed data', data)
         res.status(200).send({
           message: 'location removed successfully'
         })
       })
       .catch(err => {
-        console.log('err deleting==>>', err)
         res.status(500).send({
           message: 'error occurred deleting location',
           error: err.message
         })
-      }) 
+      })
   }
 
   static deleteSubLocation(req, res) {
     const {id, parentId} = req.params
-    console.log('che kooo', id, parentId)
     Location.findOne({"_id": parentId, "subLocations._id": id})
       .then(record => {
         if(!record) {
